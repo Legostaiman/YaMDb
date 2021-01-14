@@ -5,15 +5,22 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from .views import UserViewSet, SignUp
+from .views import UserViewSet, SignUp, AboutMeViewSet
 
 router = DefaultRouter()
+
+router.register(
+    r'users/me',
+    AboutMeViewSet,
+    basename='about_me'
+    )
 
 router.register(
     r'users',
     UserViewSet,
     basename='user'
     )
+
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),

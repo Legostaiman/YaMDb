@@ -10,39 +10,58 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
 
-from .models import Comment, Review, Group, Post, User
+from .models import Comment, Review, User, Title
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (
     CommentSerializer,
-    GroupSerializer,
-    ReviewSerializer
+    ReviewSerializer,
+    TitleSerializer,
+    UserSerializer
     )
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly
-    ]
+    permission_classes = (
+        IsOwnerOrReadOnly,
+    )
     serializer_class = ReviewSerializer
 
     def get_quryset(self):
         post = get_object_or_404(Review, pk=self.kwargs.get('title_id'))
+        return post.reviews.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet,):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (
-        permissions.IsAuthenticated,
         IsOwnerOrReadOnly,
     )
 
-    def perform_create(self, serializer):
-        post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
-        serializer.save(author=self.request.user, post=post)
+    def get_queryset(self):
+        post = get_object_or_404(
+            Review,
+            title_id=self.kwargs.get('title_id'),
+            id=self.kwargs.get('review_id')
+        )
+        return reviews.comments.all().order_by('id')
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    serializer_class = TitleSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+        IsOwnerOrReadOnly
+    )
+    queryset = Title.objects.all()
 
     def get_queryset(self):
-        post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
-        return post.comments.all()
+        post = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        return post.titles.all()
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]

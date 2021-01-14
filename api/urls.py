@@ -7,32 +7,44 @@ from rest_framework_simplejwt.views import (
         TokenRefreshView,
         )
 
-from .views import CommentViewSet, ReviewViewSet
+from .views import CommentViewSet, ReviewViewSet, TitleViewSet, UserViewSet
 
 
 router = DefaultRouter()
 
 router.register(
-    'titles/{title_id}/reviews/{review_id}/',
+    r'titles',
+    TitleViewSet,
+    basename='title'
+)
+
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews',
     ReviewViewSet,
     basename='review'
 )
 
 router.register(
-    'comments/{comment_id}',
+    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments/',
     CommentViewSet,
     basename='comment'
 )
 
+router.register(
+    'users',
+    UserViewSet,
+    basename='users'
+)
+
 urlpatterns = [
     path(
-        'api/v1/token/',
+        'v1/token/',
         TokenObtainPairView.as_view(),
         name='token_obtain_pair'
     ),
 
     path(
-        'api/v1/token/refresh/',
+        'v1/token/refresh/',
         TokenRefreshView.as_view(),
         name='token_refresh'
     ),

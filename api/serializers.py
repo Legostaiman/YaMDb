@@ -1,15 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from .models import Comment, Group, Review, User, Post
-
-
-class PostSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.username')
-
-    class Meta:
-        fields = ('id', 'text', 'author', 'pub_date',)
-        model = Post
+from .models import Comment, Review, User, Title
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -20,14 +12,22 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
 
 
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = '__all__'
-        model = Group
-
-
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.username')
+    score = serializers.IntegerField(min_value=1, max_value=10)
 
     class Meta:
         fields = ('id', 'score', 'author', 'text', 'created')
+        model = Review
+
+
+class TitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('id', 'name', 'pub_date', 'genre')
+        model = Title
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = User

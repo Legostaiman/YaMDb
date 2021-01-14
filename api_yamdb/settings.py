@@ -41,9 +41,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'api_yamdb',
     'api',
-    'django_filters',
-    
-
+    'django_filters', 
 ]
 
 MIDDLEWARE = [

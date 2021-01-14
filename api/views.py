@@ -11,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
 
 from .models import Comment, Review, User, Title
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsAdmin
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
@@ -61,7 +61,3 @@ class TitleViewSet(viewsets.ModelViewSet):
         return post.titles.all()
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]

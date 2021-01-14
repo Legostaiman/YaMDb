@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import (
         TokenRefreshView,
         )
 
-from .views import CommentViewSet, ReviewViewSet, TitleViewSet, UserViewSet
+from .views import CommentViewSet, ReviewViewSet, TitleViewSet
 
 
 router = DefaultRouter()
@@ -30,11 +30,6 @@ router.register(
     basename='comment'
 )
 
-router.register(
-    'users',
-    UserViewSet,
-    basename='users'
-)
 
 urlpatterns = [
     path(

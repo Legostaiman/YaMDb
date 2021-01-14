@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'api_yamdb',
     'api',
     'django_filters', 
+    'simple_email_confirmation',
 ]
 
 MIDDLEWARE = [

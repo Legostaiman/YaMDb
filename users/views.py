@@ -20,7 +20,6 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser, IsAdmin]
 
 
-@api_view(['POST'])
 class SignUp(APIView):
     def post(self, request):
         email = request.data.email

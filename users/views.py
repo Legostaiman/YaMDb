@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
+from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
@@ -19,6 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser, IsAdmin]
 
 
+@api_view(['POST'])
 class SignUp(APIView):
     def post(self, request):
         email = request.data.email

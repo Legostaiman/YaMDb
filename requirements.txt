@@ -26,10 +26,7 @@ sqlparse==0.3.1           # via django
 urllib3==1.25.9           # via requests
 wcwidth==0.1.9            # via pytest
 zipp==3.1.0               # via importlib-metadata
-<<<<<<< HEAD
 djangorestframework-simplejwt==4.6.0
 django-simple-email-confirmation==0.70
 django-cors-headers==3.6.0
-=======
 flake8==3.8.4
->>>>>>> Andrey_branch3

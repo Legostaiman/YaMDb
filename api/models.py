@@ -1,30 +1,16 @@
-<<<<<<< HEAD
 import datetime as dt
-=======
->>>>>>> Andrey_branch3
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import (
     AbstractUser
 )
 from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
-<<<<<<< HEAD
 from django.core.validators import MaxValueValidator
 
 from users.models import User
 
 
 class Review(models.Model):
-=======
-
-User = get_user_model()
-
-
-class Review(models.Model):
-
-    score = models.IntegerField()
-
->>>>>>> Andrey_branch3
     text = models.TextField(null=False,)
 
     pub_date = models.DateTimeField(

@@ -4,19 +4,21 @@ from rest_framework import permissions
 class IsAdmin(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        return request.user.role == 'admin' or request.user.is_superuser
+        return hasattr(request.user, "role") and request.user.role == 'admin'\
+            or request.user.is_superuser
 
 
 class IsModerator(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        return request.user.role == 'moderator'
+        return hasattr(request.user, "role")\
+            and request.user.role == 'moderator'
 
 
 class IsUser(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        return request.user.role == 'user'
+        return hasattr(request.user, "role") and request.user.role == 'user'
 
 
 class IsOwner(permissions.BasePermission):

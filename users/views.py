@@ -8,46 +8,93 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserSerializerForUser
 from .permissions import IsAdmin, IsOwner
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAdmin]
-
-
 class SignUp(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = request.body.email
+        email = request.data["email"]
         user = User.objects.create_user(email, email=email)
-        serializer = UserSerializer(data=email)
+        send_mail(
+            'Cod',
+            'Use %s to give your token' % user.confirmation_key,
+            'info@yamdb.com',
+            ['to@example.com'],
+            fail_silently=False,
+            )
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class AboutMe(APIView):
+    permission_classes = [IsOwner]
+
+    def get(self, request):
+        user = get_object_or_404(User, username=request.user)
+        serializer = UserSerializerForUser(user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        user = get_object_or_404(User, username=request.user)
+        serializer = UserSerializerForUser(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            send_mail(email, 'Use %s to confirm your email' % user.confirmation_key)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Users(APIView, PageNumberPagination):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        users = User.objects.all()
+        results = self.paginate_queryset(users, request, view=self)
+        serializer = UserSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AboutMeViewSet(viewsets.ViewSet):
-    permission_classes = (IsOwner,)
+class UserDetail(APIView, PageNumberPagination):
+    permission_classes = [IsAdmin]
 
-    def retrieve(self, request, pk=None):
-        queryset = User.objects.all()
-        user = get_object_or_404(queryset, username=request.user)
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    def partial_update(self, request, pk=None):
-        queryset = User.objects.all()
-        user = get_object_or_404(queryset, pk=pk)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+    def put(self, request, username):
+        user = get_object_or_404(User, username=username)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, username):
+        user = get_object_or_404(User, username=username)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, username):
+        user = get_object_or_404(User, username=username)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 #email = 'original@here.com'

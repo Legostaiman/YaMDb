@@ -10,14 +10,14 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
 
-from .models import Comment, Review, User, Title
+from .models import Comment, Review, Title
 from .permissions import IsOwnerOrReadOnly, IsAdmin
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
     TitleSerializer,
-    UserSerializer
     )
+from users.models import User
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -49,6 +49,8 @@ class CommentViewSet(viewsets.ModelViewSet,):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    filter_backends = (filters.SearchFilter)
+    search_fields = ['year',]
     serializer_class = TitleSerializer
     permission_classes = (
         permissions.IsAuthenticated,
@@ -59,5 +61,3 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         post = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         return post.titles.all()
-
-

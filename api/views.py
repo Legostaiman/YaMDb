@@ -10,14 +10,23 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
 
+<<<<<<< HEAD
 from .models import Comment, Review, Title
+=======
+from .models import Comment, Review, User, Title
+>>>>>>> Andrey_branch3
 from .permissions import IsOwnerOrReadOnly, IsAdmin
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
     TitleSerializer,
+<<<<<<< HEAD
     )
 from users.models import User
+=======
+    UserSerializer
+    )
+>>>>>>> Andrey_branch3
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

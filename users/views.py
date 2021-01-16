@@ -9,9 +9,10 @@ from rest_framework import status
 from django.core.mail import send_mail
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User
-from .serializers import UserSerializer, UserSerializerForUser
+from .serializers import UserSerializer, UserSerializerForUser, TokenObtainPairSerializerWithClaims
 from .permissions import IsAdmin, IsOwner
 
 
@@ -31,16 +32,20 @@ class SignUp(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = TokenObtainPairSerializerWithClaims
+
+
 class AboutMe(APIView):
-    permission_classes = [IsOwner]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
 
     def get(self, request):
-        user = get_object_or_404(User, username=request.user)
+        user = get_object_or_404(User, email=request.user)
         serializer = UserSerializerForUser(user)
         return Response(serializer.data)
 
     def patch(self, request):
-        user = get_object_or_404(User, username=request.user)
+        user = get_object_or_404(User, email=request.user)
         serializer = UserSerializerForUser(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -93,16 +98,3 @@ class UserDetail(APIView, PageNumberPagination):
         user = get_object_or_404(User, username=username)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
-
-#email = 'original@here.com'
-#user = User.objects.create_user(email, email=email)
-#user.is_confirmed # False
-
-#send_mail(email, 'Use %s to confirm your email' % user.confirmation_key)
-
-
-#user.confirm_email(user.confirmation_key)
-#user.is_confirmed # True

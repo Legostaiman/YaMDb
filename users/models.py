@@ -8,10 +8,7 @@ from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 
 
 class UserManager(UserManager):
-    def _create_user(self, username, email, password, **extra_fields):
-        """
-        Create and save a user with the given username, email, and password.
-        """
+    def _create_user(self, username, email, password=None, **extra_fields):
         email = self.normalize_email(email)
         user = self.model(username=email, email=email, **extra_fields)
         user.set_password(password)
@@ -39,7 +36,7 @@ class User(SimpleEmailConfirmationUserMixin, AbstractUser):
         ADMIN = 'admin', 'admin'
 
     role = models.TextField(choices=Role.choices, default=Role.USER)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, db_index=True)
     bio = models.TextField(blank=True)
 
     objects = UserManager()

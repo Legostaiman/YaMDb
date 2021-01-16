@@ -6,21 +6,3 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if (request.method in permissions.SAFE_METHODS or
             obj.author == request.user):
             return True
-
-
-class IsAdmin(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        return request.user.role == 'admin' or request.user.is_superuser
-
-
-class IsModerator(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        return request.user.role == 'moderator'
-
-
-class IsUser(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        return request.user.role == 'user'

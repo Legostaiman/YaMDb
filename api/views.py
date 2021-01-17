@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 
 from .models import Comment, Review, Title, Genre, Category
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
@@ -21,6 +21,17 @@ from .serializers import (
     CategorySerializer
     )
 from users.models import User
+from users.permissions import IsAdmin
+from .filters import TitleFilter
+
+
+class CustomViewSet(
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -62,27 +73,28 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
+    filter_class = TitleFilter
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CustomViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    pagination_class = PageNumberPagination
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAdminOrReadOnly,
+    )
+    lookup_field = 'slug'
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(CustomViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    pagination_class = PageNumberPagination
     permission_classes = (
-        IsOwnerOrReadOnly, 
         permissions.IsAuthenticatedOrReadOnly,
+        IsAdminOrReadOnly
     )
-    filter_backends = [filters.SearchFilter]
-    search_fields = ('name', )
-
-    def get_queryset(self,):
-        return Category.objects.all()
-  
-    def perform_create(self, serializer):
-        return serializer.save()
+    lookup_field = 'slug'
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)

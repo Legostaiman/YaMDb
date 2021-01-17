@@ -21,7 +21,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     score = serializers.IntegerField(min_value=1, max_value=10)
-    
+
     def validate_author(self, value):
 
         title_id = self.kwargs.get('title_id')

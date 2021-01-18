@@ -1,18 +1,15 @@
-from django.shortcuts import render
-from rest_framework import viewsets, permissions, filters
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from django.views.generic import CreateView
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
 from django.core.mail import send_mail
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
-from .serializers import UserSerializer, UserSerializerForUser, TokenObtainPairSerializerWithClaims
+from .serializers import UserSerializer, UserSerializerForUser,\
+    ConfirmationCodeSerializer
 from .permissions import IsAdmin, IsOwner
 
 
@@ -32,8 +29,23 @@ class SignUp(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = TokenObtainPairSerializerWithClaims
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def get_token(request):
+    error_message = 'confirmation key is not valid'
+    serializer = ConfirmationCodeSerializer(data=request.data)
+    if serializer.is_valid():
+        email = serializer.data.get('email')
+        confirmation_key = serializer.data.get('confirmation_key')
+        user = get_object_or_404(User, email=email)
+        if confirmation_key == user.confirmation_key:
+            token = AccessToken.for_user(user)
+            user.is_active = True
+            user.save
+            return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
+        return Response({'confirmation_key': f'{error_message}'},
+                        status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AboutMe(APIView):
@@ -46,7 +58,11 @@ class AboutMe(APIView):
 
     def patch(self, request):
         user = get_object_or_404(User, email=request.user)
-        serializer = UserSerializerForUser(user, data=request.data, partial=True)
+        serializer = UserSerializerForUser(
+            user,
+            data=request.data,
+            partial=True
+            )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

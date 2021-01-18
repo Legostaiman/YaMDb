@@ -28,12 +28,6 @@ class Comment(models.Model):
         related_name='comments',
     )
 
-    post = models.ForeignKey(
-        Review,
-        on_delete=models.CASCADE,
-        related_name='comments',
-    )
-
     text = models.TextField()
 
     pub_date = models.DateTimeField(

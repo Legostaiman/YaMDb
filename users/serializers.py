@@ -38,3 +38,8 @@ class TokenObtainPairSerializerWithClaims(TokenObtainPairSerializer):
         self.fields[self.username_field] = serializers.CharField()
         del self.fields['password']
         self.fields['confirmation_key'] = serializers.CharField()
+
+
+class ConfirmationCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    confirmation_key = serializers.CharField(required=True)

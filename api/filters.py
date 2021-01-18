@@ -10,16 +10,23 @@ class TitleFilter(django_filters.FilterSet):
         lookup_expr='icontains'
     )
 
-    genre = django_filters.ModelMultipleChoiceFilter(
-        field_name='genre',                                                
-        queryset=Title.objects.all(),
+    genre = django_filters.CharFilter(
+        field_name='genre__slug',
     )
 
     category = django_filters.CharFilter(
-        field_name='category',
-        lookup_expr='icontaions'
+        field_name='category__slug',
+    )
+
+    year = django_filters.NumberFilter(
+        field_name='year',
     )
 
     class Meta:
         model = Title
-        fields = ('name', 'genre',)
+        fields = (
+            'name',
+            'genre',
+            'category',
+            'year'
+        )

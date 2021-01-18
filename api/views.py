@@ -16,7 +16,6 @@ from .permissions import IsOwnerOrReadOnly
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
-    TitleSerializer,
     GenreSerializer,
     CategorySerializer
     )
@@ -56,12 +55,6 @@ class CommentViewSet(viewsets.ModelViewSet,):
             id=self.kwargs.get('review_id')
         )
         return reviews.comments.all().order_by('id')
-
-
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    pagination_class = PageNumberPagination
 
 
 class GenreViewSet(viewsets.ModelViewSet):

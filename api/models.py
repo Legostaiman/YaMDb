@@ -70,7 +70,7 @@ class Title(models.Model):
     rating = models.IntegerField(
         blank=True,
         null=True,
-    ) 
+    )
 
     description = models.TextField(
         max_length=2000,

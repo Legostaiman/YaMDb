@@ -16,9 +16,10 @@ from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
-    TitleSerializer,
+    TitleWriteSerializer,
+    TitleReadSerializer,
     GenreSerializer,
-    CategorySerializer
+    CategorySerializer,
     )
 from users.models import User
 from users.permissions import IsAdmin
@@ -37,20 +38,13 @@ class CustomViewSet(
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly, 
-        IsOwnerOrReadOnly,
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAdminOrReadOnly, 
     )
 
-    def get_queryset(self):
-        title_id = self.kwargs['title_id']
-        return Review.objects.filter(title=title_id)
-
-    def perform_create(self, serializer, *args, **kwargs):
-        title_id = self.kwargs['title_id']
-        title = get_object_or_404(Title, id=title_id)
-        if not Review.objects.filter(author=self.request.user,
-                                     title=title).exists():
-            serializer.save(author=self.request.user, title=title)
+    def perform_create(self, serializer):
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet,):
@@ -66,14 +60,7 @@ class CommentViewSet(viewsets.ModelViewSet,):
             title_id=self.kwargs.get('title_id'),
             id=self.kwargs.get('review_id')
         )
-        return reviews.comments.all().order_by('id')
-
-
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    pagination_class = PageNumberPagination
-    filter_class = TitleFilter
+        return reviews.comments.all()
 
 
 class GenreViewSet(CustomViewSet):
@@ -98,3 +85,19 @@ class CategoryViewSet(CustomViewSet):
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleWriteSerializer
+    filterset_class = TitleFilter
+    filter_backends = (DjangoFilterBackend,)
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAdminOrReadOnly
+    )
+
+    def get_serializer_class(self):
+        if self.request.method in ['POST', 'PATCH']:
+            return TitleWriteSerializer
+        return TitleReadSerializer

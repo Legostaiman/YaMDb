@@ -90,4 +90,3 @@ class Title(models.Model):
         blank=True,
         null=True,
     )
-

@@ -1,29 +1,16 @@
-from django.shortcuts import render
-from rest_framework.response import Response
 from rest_framework import (
     filters,
     mixins,
     permissions,
-    status,
     viewsets,
 )
-from rest_framework.views import APIView
-from django.http import request
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view
-from rest_framework.pagination import PageNumberPagination
 
 from .models import Comment, Review, Title, Genre, Category
-from .permissions import IsOwnerOrReadOnly,\
-    IsAdmin,\
-    IsSuperUserOrReadOnly,\
-    TitlePermission
+from .permissions import IsOwnerOrReadOnly, IsSuperUserOrReadOnly
 
 from .serializers import (
     CommentSerializer,
-    ReviewSerializer,
-    CategorySerializer,
     GenreSerializer,
     CategorySerializer,
     ReviewSerializer,
@@ -31,7 +18,6 @@ from .serializers import (
     TitleSerializerGet,
 )
 
-from users.models import User
 from .pagination import CustomPagination
 from rest_framework.permissions import SAFE_METHODS
 
@@ -68,7 +54,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             title_id=self.kwargs.get('title_id'),
             id=self.kwargs.get('review_id')
         )
-        return reviews.comments.all().order_by('id')  # Спросить. post.comoents.all().order_by('id')
+        return reviews.comments.all().order_by('id')
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -92,7 +78,7 @@ class GenreViewSet(mixins.CreateModelMixin,
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
     serializer_class = GenreSerializer
-    permission_classes = [IsSuperUserOrReadOnly,]
+    permission_classes = [IsSuperUserOrReadOnly]
     pagination_class = CustomPagination
     lookup_field = 'slug'
 
@@ -100,8 +86,7 @@ class GenreViewSet(mixins.CreateModelMixin,
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     filter_backends = [filters.SearchFilter]
-    #search_fields = ['name']
-    permission_classes = [TitlePermission,]
+    permission_classes = [IsSuperUserOrReadOnly]
     pagination_class = CustomPagination
 
     def get_serializer_class(self):
@@ -128,21 +113,3 @@ class TitleViewSet(viewsets.ModelViewSet):
             queryset = Title.objects.filter(
                 name__contains=name)
         return queryset
-
-
-
-
-
-
-
-
-
-
-
-
-'''    def get_queryset(self,):
-        return Category.objects.all()
-  
-    def perform_create(self, serializer):
-        return serializer.save()
-'''

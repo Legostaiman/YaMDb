@@ -47,7 +47,8 @@ class Comment(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(verbose_name='название', max_length=200, unique=True)
+    name = models.CharField(verbose_name='название', max_length=200,
+                            unique=True)
 
     slug = models.SlugField(
         max_length=200,
@@ -100,7 +101,6 @@ class Title(models.Model):
         blank=True,
         null=True,
     )
-
 
     class Meta:
         verbose_name = 'произведение'

@@ -287,3 +287,4 @@ class Test01UserAPI:
             'Проверьте, что при PATCH запросе `/api/v1/users/me/` с токеном авторизации возвращается статус 200'
         assert test_moderator.first_name == 'NewTest', \
             'Проверьте, что при PATCH запросе `/api/v1/users/me/` изменяете данные'
+

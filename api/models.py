@@ -44,3 +44,64 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
+
+
+class Category(models.Model):
+    name = models.CharField(verbose_name='название', max_length=200,
+                            unique=True)
+
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+    )
+
+
+class Genre(models.Model):
+    name = models.CharField(verbose_name='название', max_length=200)
+
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+    )
+
+
+class Title(models.Model):
+    name = models.CharField(verbose_name='название', max_length=200)
+
+    year = models.IntegerField(
+        verbose_name='год',
+        blank=True,
+        null=True,
+        validators=[MaxValueValidator(dt.date.today().year)],
+    )
+
+    genre = models.ManyToManyField(
+        to=Genre,
+        blank=True
+    )
+
+    category = models.ForeignKey(
+        Category,
+        db_column='category_slug',
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        verbose_name='категория',
+        blank=True,
+        null=True,
+    )
+
+    description = models.TextField(
+        verbose_name='описание',
+        max_length=2000,
+        blank=True,
+    )
+
+    rating = models.IntegerField(
+        verbose_name='рейтинг',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'произведение'
+        verbose_name_plural = 'произведения'

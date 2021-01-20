@@ -1,25 +1,25 @@
-from django.shortcuts import render
 from rest_framework import (
     filters,
     mixins,
     permissions,
-    status,
     viewsets,
 )
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view
-from rest_framework.pagination import PageNumberPagination
 
 from .models import Comment, Review, Title, Genre, Category
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsSuperUserOrReadOnly
+
 from .serializers import (
     CommentSerializer,
-    ReviewSerializer,
     GenreSerializer,
-    CategorySerializer
-    )
-from users.models import User
+    CategorySerializer,
+    ReviewSerializer,
+    TitleSerializerPost,
+    TitleSerializerGet,
+)
+
+from .pagination import CustomPagination
+from rest_framework.permissions import SAFE_METHODS
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -41,7 +41,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             serializer.save(author=self.request.user, title=title)
 
 
-class CommentViewSet(viewsets.ModelViewSet,):
+class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (
@@ -57,25 +57,59 @@ class CommentViewSet(viewsets.ModelViewSet,):
         return reviews.comments.all().order_by('id')
 
 
-class GenreViewSet(viewsets.ModelViewSet):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    pagination_class = PageNumberPagination
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    pagination_class = PageNumberPagination
-    permission_classes = (
-        IsOwnerOrReadOnly, 
-        permissions.IsAuthenticatedOrReadOnly,
-    )
     filter_backends = [filters.SearchFilter]
-    search_fields = ('name', )
+    search_fields = ['name']
+    serializer_class = CategorySerializer
+    permission_classes = [IsSuperUserOrReadOnly,]
+    pagination_class = CustomPagination
+    lookup_field = 'slug'
 
-    def get_queryset(self,):
-        return Category.objects.all()
-  
-    def perform_create(self, serializer):
-        return serializer.save()
+
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Genre.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+    serializer_class = GenreSerializer
+    permission_classes = [IsSuperUserOrReadOnly]
+    pagination_class = CustomPagination
+    lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    filter_backends = [filters.SearchFilter]
+    permission_classes = [IsSuperUserOrReadOnly]
+    pagination_class = CustomPagination
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return TitleSerializerGet
+        return TitleSerializerPost
+
+    def get_queryset(self):
+        queryset = Title.objects.all()
+        genre = self.request.query_params.get('genre', None)
+        if genre is not None:
+            queryset = Title.objects.filter(
+                genre=Genre.objects.get(slug=genre))
+        category = self.request.query_params.get('category', None)
+        if category is not None:
+            queryset = Title.objects.filter(
+                category=Category.objects.get(slug=category))
+        year = self.request.query_params.get('year', None)
+        if year is not None:
+            queryset = Title.objects.filter(
+                year=year)
+        name = self.request.query_params.get('name', None)
+        if name is not None:
+            queryset = Title.objects.filter(
+                name__contains=name)
+        return queryset

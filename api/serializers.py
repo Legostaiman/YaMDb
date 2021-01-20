@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from django.shortcuts import get_object_or_404
 
-from .models import Comment, Review
+from .models import Comment, Review, Category, Genre, Title
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -38,3 +37,41 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date', 'score')
         model = Review
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name',
+                  'slug')
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ('name',
+                  'slug')
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Title
+        fields = '__all__'
+
+
+class TitleSerializerGet(TitleSerializer):
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+
+
+class TitleSerializerPost(TitleSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True,
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),
+        required=False
+    )

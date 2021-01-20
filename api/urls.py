@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
+
 from .views import (
         CommentViewSet, 
         ReviewViewSet, 
@@ -42,6 +43,13 @@ router.register(
     GenreViewSet,
     basename='genre'
 )
+
+router.register(
+    r'categories',
+    CategoryViewSet,
+    basename='categories'
+)
+
 
 urlpatterns = [
     path(

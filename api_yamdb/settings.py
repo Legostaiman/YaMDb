@@ -125,10 +125,10 @@ REST_FRAMEWORK = {
             'django_filters.rest_framework.DjangoFilterBackend'
         ],
 
-        'DEFAULT_PAGINATION_CLASS':
+        'DEFAULT_PAGINATION_CLASS': 
             'rest_framework.pagination.PageNumberPagination',
-        'PAGE_SIZE': 10,
-
+            'PAGE_SIZE': 10
+        
     }
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

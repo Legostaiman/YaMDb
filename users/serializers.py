@@ -14,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'email',
             'role',
+            'id'
             )
         model = User
 
@@ -27,6 +28,7 @@ class UserSerializerForUser(serializers.ModelSerializer):
             'bio',
             'email',
             'role',
+            'id'
             )
         model = User
         read_only_fields = ('role',)

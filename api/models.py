@@ -9,14 +9,20 @@ class Category(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
 
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+    )
 
 
 class Genre(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
 
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+    )
 
 
 class Title(models.Model):
@@ -24,26 +30,20 @@ class Title(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
     year = models.IntegerField(
+        verbose_name='год',
         blank=True,
         null=True,
         validators=[MaxValueValidator(dt.date.today().year)],
     )
 
     description = models.TextField(
+        verbose_name='описание',
         max_length=2000,
         blank=True,
     )
 
-    genre = models.ManyToManyField(
-        to=Genre,
-        related_name='titles',
-        blank=True,
-    )
-
-    category = models.ForeignKey(
-        to=Category,
-        on_delete=models.SET_NULL,
-        related_name='titles',
+    rating = models.IntegerField(
+        verbose_name='рейтинг',
         blank=True,
         null=True,
     )

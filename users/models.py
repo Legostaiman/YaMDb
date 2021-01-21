@@ -1,7 +1,4 @@
-from django.contrib.auth.models import (
-    AbstractUser,
-    UserManager
-)
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 
 from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
@@ -15,7 +12,13 @@ class UserManager(UserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username=None, email=None, password=None, **extra_fields):
+    def create_superuser(
+            self,
+            username=None,
+            email=None,
+            password=None,
+            **extra_fields
+            ):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('role', 'admin')

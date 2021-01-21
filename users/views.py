@@ -4,7 +4,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.views import APIView
+<<<<<<< HEAD
 from rest_framework.pagination import LimitOffsetPagination
+=======
+from rest_framework.pagination import PageNumberPagination
+>>>>>>> f3203fe8bab92bf6cf989f74382dc7260fd66635
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
@@ -58,7 +62,11 @@ class AboutMe(APIView):
 
     def patch(self, request):
         user = get_object_or_404(User, email=request.user)
-        serializer = UserSerializerForUser(user, data=request.data, partial=True)
+        serializer = UserSerializerForUser(
+            user,
+            data=request.data,
+            partial=True
+            )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

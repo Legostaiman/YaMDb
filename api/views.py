@@ -2,13 +2,13 @@ from rest_framework import (
     filters,
     mixins,
     permissions,
-    status,
     viewsets,
 )
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
 from django.db.models import Avg
+from rest_framework.permissions import SAFE_METHODS
 
 from .models import (
     Comment,
@@ -20,14 +20,16 @@ from .models import (
 from .permissions import (
     IsAdminOrReadOnly,
     ReviewCommentPermission,
+    IsSuperUserOrReadOnly,
 )
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
-    TitleWriteSerializer,
-    TitleReadSerializer,
     GenreSerializer,
     CategorySerializer,
+    TitleSerializer,
+    TitleSerializerGet,
+    TitleSerializerPost,
 )
 from .filters import TitleFilter
 from users.models import User
@@ -82,41 +84,34 @@ class CommentViewSet(viewsets.ModelViewSet,):
 
 class GenreViewSet(CustomViewSet):
     queryset = Genre.objects.all()
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
     serializer_class = GenreSerializer
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAdminOrReadOnly,
-    )
+    permission_classes = (IsSuperUserOrReadOnly, )
     lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
 
 
-class CategoryViewSet(CustomViewSet):
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
     serializer_class = CategorySerializer
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAdminOrReadOnly,
-    )
+    permission_classes = (IsSuperUserOrReadOnly, )
     lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).order_by('-id')
-    serializer_class = TitleWriteSerializer
-    filterset_class = TitleFilter
     filter_backends = (DjangoFilterBackend, )
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAdminOrReadOnly,
-    )
+    permission_classes = (IsSuperUserOrReadOnly, )
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
-        if self.request.method in ('POST', 'PATCH'):
-            return TitleWriteSerializer
-        return TitleReadSerializer
+        if self.request.method in SAFE_METHODS:
+            return TitleSerializerGet
+        return TitleSerializerPost

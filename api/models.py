@@ -6,50 +6,61 @@ from users.models import User
 
 
 class Category(models.Model):
+    name = models.CharField(verbose_name='название', max_length=200,
+                            unique=True)
 
-    name = models.CharField(max_length=200, unique=True)
-
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+    )
 
 
 class Genre(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
 
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+    )
 
 
 class Title(models.Model):
-
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(verbose_name='название', max_length=200)
 
     year = models.IntegerField(
+        verbose_name='год',
         blank=True,
         null=True,
         validators=[MaxValueValidator(dt.date.today().year)],
     )
 
-    description = models.TextField(
-        max_length=2000,
-        blank=True,
-    )
-
     genre = models.ManyToManyField(
         to=Genre,
-        related_name='titles',
         blank=True,
+        related_name='titles',
+
     )
 
     category = models.ForeignKey(
-        to=Category,
+        Category,
+        db_column='category_slug',
         on_delete=models.SET_NULL,
         related_name='titles',
+        verbose_name='категория',
         blank=True,
         null=True,
     )
 
+    description = models.TextField(
+        verbose_name='описание',
+        max_length=2000,
+        blank=True,
+    )
+
     class Meta:
-        ordering = ('-id', )
+        verbose_name = 'произведение'
+        verbose_name_plural = 'произведения'
 
 
 class Review(models.Model):
@@ -90,11 +101,13 @@ class Comment(models.Model):
         related_name='comments'
     )
     text = models.TextField()
+
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='comments'
     )
+
     pub_date = models.DateTimeField(
         auto_now_add=True,
         db_index=True

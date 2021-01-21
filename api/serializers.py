@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, validators
 
-from .models import Comment, Review, Title, Category, Genre
+from .models import Comment, Review, Category, Genre, Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -47,35 +47,42 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name',
+                  'slug')
 
+
+class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ('name', 'slug')
+        fields = ('name',
+                  'slug')
 
 
-class TitleReadSerializer(serializers.ModelSerializer):
-
-    genre = GenreSerializer(read_only=True, many=True)
-    category = CategorySerializer(read_only=True)
-    rating = serializers.IntegerField(read_only=True, required=False)
+class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = "__all__"
         model = Title
+        fields = '__all__'
 
 
-class TitleWriteSerializer(serializers.ModelSerializer):
+class TitleSerializerGet(TitleSerializer):
+    rating = serializers.IntegerField(read_only=True, required=False)
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer(read_only=True)
+
+
+class TitleSerializerPost(TitleSerializer):
 
     genre = serializers.SlugRelatedField(
+        slug_field='slug',
         queryset=Genre.objects.all(),
-        slug_field='slug', many=True
+        many=True,
     )
     category = serializers.SlugRelatedField(
+        slug_field='slug',
         queryset=Category.objects.all(),
-        slug_field='slug'
+        required=False
     )
-
-    class Meta:
-        fields = '__all__'
-        model = Title

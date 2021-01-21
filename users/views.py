@@ -58,7 +58,11 @@ class AboutMe(APIView):
 
     def patch(self, request):
         user = get_object_or_404(User, email=request.user)
-        serializer = UserSerializerForUser(user, data=request.data, partial=True)
+        serializer = UserSerializerForUser(
+            user,
+            data=request.data,
+            partial=True
+            )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

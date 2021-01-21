@@ -6,18 +6,21 @@ from users.models import User
 
 
 class Category(models.Model):
+
     name = models.CharField(max_length=200, unique=True)
 
     slug = models.SlugField(max_length=200, unique=True)
 
 
 class Genre(models.Model):
+
     name = models.CharField(max_length=200, unique=True)
 
     slug = models.SlugField(max_length=200, unique=True)
 
 
 class Title(models.Model):
+
     name = models.CharField(max_length=200, unique=True)
 
     year = models.IntegerField(
@@ -73,7 +76,7 @@ class Review(models.Model):
     score = models.IntegerField(validators=(
         MinValueValidator(1),
         MaxValueValidator(10))
-    )                
+    )
 
     class Meta:
         ordering = ('-pub_date', )
@@ -86,15 +89,12 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments'
     )
-
     text = models.TextField()
-
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='comments'
     )
-
     pub_date = models.DateTimeField(
         auto_now_add=True,
         db_index=True

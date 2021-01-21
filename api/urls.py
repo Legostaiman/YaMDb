@@ -3,9 +3,9 @@ from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
 from .views import (
-        CommentViewSet, 
-        ReviewViewSet, 
-        GenreViewSet, 
+        CommentViewSet,
+        ReviewViewSet,
+        GenreViewSet,
         CategoryViewSet,
         TitleViewSet,
     )

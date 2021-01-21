@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
@@ -65,7 +65,7 @@ class AboutMe(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class Users(APIView, PageNumberPagination):
+class Users(APIView, LimitOffsetPagination):
     permission_classes = [IsAdmin]
 
     def get(self, request):
@@ -82,7 +82,7 @@ class Users(APIView, PageNumberPagination):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetail(APIView, PageNumberPagination):
+class UserDetail(APIView, LimitOffsetPagination):
     permission_classes = [IsAdmin]
 
     def get(self, request, username):

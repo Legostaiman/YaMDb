@@ -6,11 +6,11 @@ from users.models import User
 
 
 class Category(models.Model):
-    name = models.CharField(verbose_name='название категории', max_length=200,
+    name = models.CharField(verbose_name='Название категории', max_length=200,
                             unique=True)
 
     slug = models.SlugField(
-        verbose_name='slug категории',
+        verbose_name='Slug категории',
         max_length=200,
         unique=True,
     )
@@ -22,13 +22,13 @@ class Category(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(
-        verbose_name='название жанра',
+        verbose_name='Название жанра',
         max_length=200,
         unique=True
     )
 
     slug = models.SlugField(
-        verbose_name='slug жанра',
+        verbose_name='Slug жанра',
         max_length=200,
         unique=True,
     )
@@ -39,16 +39,17 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField(verbose_name='название', max_length=200)
+    name = models.CharField(verbose_name='Название произведения', max_length=200)
 
     year = models.IntegerField(
-        verbose_name='год',
+        verbose_name='Год выхода',
         blank=True,
         null=True,
         validators=[MaxValueValidator(dt.date.today().year)],
     )
 
     genre = models.ManyToManyField(
+        verbose_name='Жанр произведения',
         to=Genre,
         blank=True,
         related_name='titles',
@@ -60,20 +61,20 @@ class Title(models.Model):
         db_column='category_slug',
         on_delete=models.SET_NULL,
         related_name='titles',
-        verbose_name='категория',
+        verbose_name='Категория произведения',
         blank=True,
         null=True,
     )
 
     description = models.TextField(
-        verbose_name='описание',
+        verbose_name='Описание произведения',
         max_length=2000,
         blank=True,
     )
 
     class Meta:
-        verbose_name = 'произведение'
-        verbose_name_plural = 'произведения'
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
 
 
 class Review(models.Model):

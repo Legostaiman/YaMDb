@@ -106,25 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-<<<<<<< HEAD
-        'DEFAULT_AUTHENTICATION_CLASSES': [
-            'rest_framework_simplejwt.authentication.JWTAuthentication',
-            'rest_framework.authentication.BasicAuthentication',
-            'rest_framework.authentication.SessionAuthentication',
-            'rest_framework.authentication.TokenAuthentication',
-        ],
-
-        'DEFAULT_FILTER_BACKENDS': [
-            'django_filters.rest_framework.DjangoFilterBackend'
-        ],
-
-        'DEFAULT_PAGINATION_CLASS': 
-            'rest_framework.pagination.LimitOffsetPagination',
-            'PAGE_SIZE': 10
-        
-    }
-=======
->>>>>>> f3203fe8bab92bf6cf989f74382dc7260fd66635
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -169,7 +150,7 @@ REST_FRAMEWORK = {
         ],
 
         'DEFAULT_PAGINATION_CLASS':
-            'rest_framework.pagination.PageNumberPagination',
+            'rest_framework.pagination.LimitOffsetPagination',
         'PAGE_SIZE': 10,
 
     }

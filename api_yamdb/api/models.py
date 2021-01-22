@@ -6,36 +6,23 @@ from users.models import User
 
 
 class Category(models.Model):
-    name = models.CharField(verbose_name='название категории', max_length=200,
+    name = models.CharField(verbose_name='название', max_length=200,
                             unique=True)
 
     slug = models.SlugField(
-        verbose_name='slug категории',
         max_length=200,
         unique=True,
     )
-
-    class Meta:
-        verbose_name = 'Категория произведения'
-        verbose_name_plural = 'Категории произведений'
 
 
 class Genre(models.Model):
-    name = models.CharField(
-        verbose_name='название жанра',
-        max_length=200,
-        unique=True
-    )
+
+    name = models.CharField(max_length=200, unique=True)
 
     slug = models.SlugField(
-        verbose_name='slug жанра',
         max_length=200,
         unique=True,
     )
-
-    class Meta:
-        verbose_name = 'Жанр произведения'
-        verbose_name_plural = 'Жанры произведений'
 
 
 class Title(models.Model):
@@ -77,6 +64,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -102,10 +90,11 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ('-pub_date',)
+        ordering = ('-pub_date', )
 
 
 class Comment(models.Model):
+
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
@@ -125,4 +114,4 @@ class Comment(models.Model):
     )
 
     class Meta:
-        ordering = ('-pub_date',)
+        ordering = ('-pub_date', )

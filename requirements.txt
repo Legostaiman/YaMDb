@@ -30,3 +30,4 @@ djangorestframework-simplejwt==4.6.0
 django-simple-email-confirmation==0.70
 django-cors-headers==3.6.0
 flake8==3.8.4
+django-filter

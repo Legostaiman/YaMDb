@@ -44,7 +44,7 @@ router.register(
 
 urlpatterns = [
     path(
-        'api/v1/',
+        'v1/',
         include(router.urls)
     )
 ]

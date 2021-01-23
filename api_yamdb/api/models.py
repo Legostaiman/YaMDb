@@ -6,50 +6,36 @@ from users.models import User
 
 
 class Category(models.Model):
-    name = models.CharField(verbose_name='Название категории', max_length=200,
+    name = models.CharField(verbose_name='название', max_length=200,
                             unique=True)
 
     slug = models.SlugField(
-        verbose_name='Slug категории',
         max_length=200,
         unique=True,
     )
-
-    class Meta:
-        verbose_name = 'Категория произведения'
-        verbose_name_plural = 'Категории произведений'
 
 
 class Genre(models.Model):
-    name = models.CharField(
-        verbose_name='Название жанра',
-        max_length=200,
-        unique=True
-    )
+
+    name = models.CharField(max_length=200, unique=True)
 
     slug = models.SlugField(
-        verbose_name='Slug жанра',
         max_length=200,
         unique=True,
     )
 
-    class Meta:
-        verbose_name = 'Жанр произведения'
-        verbose_name_plural = 'Жанры произведений'
-
 
 class Title(models.Model):
-    name = models.CharField(verbose_name='Название произведения', max_length=200)
+    name = models.CharField(verbose_name='название', max_length=200)
 
     year = models.IntegerField(
-        verbose_name='Год выхода',
+        verbose_name='год',
         blank=True,
         null=True,
         validators=[MaxValueValidator(dt.date.today().year)],
     )
 
     genre = models.ManyToManyField(
-        verbose_name='Жанр произведения',
         to=Genre,
         blank=True,
         related_name='titles',
@@ -61,23 +47,24 @@ class Title(models.Model):
         db_column='category_slug',
         on_delete=models.SET_NULL,
         related_name='titles',
-        verbose_name='Категория произведения',
+        verbose_name='категория',
         blank=True,
         null=True,
     )
 
     description = models.TextField(
-        verbose_name='Описание произведения',
+        verbose_name='описание',
         max_length=2000,
         blank=True,
     )
 
     class Meta:
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
+        verbose_name = 'произведение'
+        verbose_name_plural = 'произведения'
 
 
 class Review(models.Model):
+
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -103,10 +90,11 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ('-pub_date',)
+        ordering = ('-pub_date', )
 
 
 class Comment(models.Model):
+
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
@@ -126,4 +114,4 @@ class Comment(models.Model):
     )
 
     class Meta:
-        ordering = ('-pub_date',)
+        ordering = ('-pub_date', )

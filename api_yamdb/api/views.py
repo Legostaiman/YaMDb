@@ -6,6 +6,7 @@ from rest_framework import (
 )
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import api_view
 from django.db.models import Avg
 from rest_framework.permissions import SAFE_METHODS
 
@@ -17,6 +18,7 @@ from .models import (
     Category,
 )
 from .permissions import (
+    IsAdminOrReadOnly,
     ReviewCommentPermission,
     IsSuperUserOrReadOnly,
 )
@@ -30,6 +32,7 @@ from .serializers import (
     TitleSerializerPost,
 )
 from .filters import TitleFilter
+from users.models import User
 
 
 class CustomViewSet(
@@ -88,7 +91,10 @@ class GenreViewSet(CustomViewSet):
     lookup_field = 'slug'
 
 
-class CategoryViewSet(CustomViewSet):
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )

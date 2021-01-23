@@ -39,4 +39,3 @@ class ConfirmationCodeSerializer(serializers.Serializer):
 
 class SignUpSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
-    

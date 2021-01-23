@@ -6,11 +6,15 @@ from rest_framework.response import Response
 from rest_framework import permissions, status, viewsets
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework import generics, filters
+from rest_framework import filters
 
 from .models import User
-from .serializers import (UserSerializer, SignUpSerializer,
-    UserSerializerForUser, ConfirmationCodeSerializer)
+from .serializers import (
+    UserSerializer,
+    SignUpSerializer,
+    UserSerializerForUser,
+    ConfirmationCodeSerializer
+    )
 from .permissions import IsAdmin, IsOwner
 
 
@@ -40,7 +44,7 @@ def get_token(request):
     serializer = ConfirmationCodeSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         email = serializer.validated_data['email']
-        confirmation_key = serializer.data.get('confirmation_key')
+        confirmation_key = serializer.validated_data.get('confirmation_key')
         user = get_object_or_404(User, email=email)
         if confirmation_key == user.confirmation_key:
             token = AccessToken.for_user(user)
@@ -56,12 +60,13 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdmin]
-    filter_backends = [filters.SearchFilter]    
+    filter_backends = [filters.SearchFilter]
     search_fields = ['username']
     lookup_field = 'username'
     lookup_value_regex = r'[^/]+'
 
-    @action(detail=False,
+    @action(
+        detail=False,
         methods=['get', 'patch'],
         permission_classes=[permissions.IsAuthenticated, IsOwner]
         )
@@ -77,7 +82,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 data=request.data,
                 partial=True
                 )
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

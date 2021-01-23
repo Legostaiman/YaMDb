@@ -5,7 +5,14 @@ from .models import User
 
 
 class UserAdmin(UserAdmin):
-    list_display = ('pk', 'username', 'role', 'bio', 'email', 'confirmation_key')
+    list_display = (
+        'pk',
+        'username',
+        'role',
+        'bio',
+        'email',
+        'confirmation_key'
+        )
     empty_value_display = '-пусто-'
 
 

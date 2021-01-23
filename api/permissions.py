@@ -18,34 +18,53 @@ class ReviewCommentPermission(permissions.BasePermission):
                 request.user.is_authenticated)
 
     def has_object_permission(self, request, view, obj):
-        return (
-            obj.author == request.user or
-            request.method in permissions.SAFE_METHODS or
-            request.user.role == request.user.Role.MODERATOR or
-            request.user.role == request.user.Role.ADMIN)
         if (request.method in permissions.SAFE_METHODS or
                 obj.author == request.user):
             return True
+        return (
+            request.method in permissions.SAFE_METHODS or
+            obj.author == request.user or
+            request.user.role == request.user.Role.MODERATOR or
+            request.user.role == request.user.Role.ADMIN
+        )
 
 
 class IsAdmin(permissions.BasePermission):
-
     def has_permission(self, request, view):
-        return request.user.role == 'admin' or request.user.is_superuser
+        return (
+            hasattr(request.user, 'role') and
+            request.user.role == User.Role.ADMIN or
+            request.user.is_superuser
+        )
 
 
 class IsModerator(permissions.BasePermission):
-
     def has_permission(self, request, view):
-        return request.user.role == 'moderator'
+        return (
+            hasattr(request.user, 'role') and
+            request.user.role == User.Role.MODERATOR
+        )
 
 
 class IsUser(permissions.BasePermission):
-
     def has_permission(self, request, view):
-        return request.user.role == 'user'
+        return (
+            hasattr(request.user, 'role') and
+            request.user.role == User.Role.USER
+        )
+
+
+class IsOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return (
+            obj.email == request.user or
+            request.method in permissions.SAFE_METHODS
+        )
 
 
 class IsSuperUserOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.method in permissions.SAFE_METHODS or request.user.is_superuser
+        return (
+            request.method in permissions.SAFE_METHODS or
+            request.user.is_superuser
+        )

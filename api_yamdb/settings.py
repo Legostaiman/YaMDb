@@ -128,6 +128,8 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"  # ниже изменения из мастера
 
+ADMINS_EMAIL = 'john@example.com'
+
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 
 AUTH_USER_MODEL = 'users.User'

@@ -7,6 +7,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import filters
+
 from .models import User
 from .serializers import (
     UserSerializer,

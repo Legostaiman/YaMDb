@@ -51,7 +51,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         title = self.kwargs.get('title_id')
-        return Review.objects.filter(title=title).order_by('id')
+        return Review.objects.filter(title=title).order_by('id')  
 
     def perform_create(self, serializer):
         serializer.save(

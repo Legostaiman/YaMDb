@@ -27,7 +27,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        exclude = ('title', )
         read_only_fields = ('author', 'title_id')
 
 
@@ -60,11 +60,13 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         exclude = ('id', )
 
+
 class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
         fields = '__all__'
+
 
 class TitleSerializerGet(TitleSerializer):
     rating = serializers.IntegerField(read_only=True, required=False)

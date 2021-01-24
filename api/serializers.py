@@ -1,13 +1,11 @@
-from rest_framework import serializers
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers, validators
 from django.core.exceptions import ValidationError
+from rest_framework import serializers
 
 from .models import Comment, Review, Category, Genre, Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
@@ -49,7 +47,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Category
         exclude = ('id', )
@@ -60,11 +57,13 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         exclude = ('id', )
 
+
 class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
         fields = '__all__'
+
 
 class TitleSerializerGet(TitleSerializer):
     rating = serializers.IntegerField(read_only=True, required=False)

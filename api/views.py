@@ -10,7 +10,6 @@ from django.db.models import Avg
 from rest_framework.permissions import SAFE_METHODS
 
 from .models import (
-    Comment,
     Review,
     Title,
     Genre,
@@ -25,14 +24,13 @@ from .serializers import (
     ReviewSerializer,
     GenreSerializer,
     CategorySerializer,
-    TitleSerializer,
     TitleSerializerGet,
     TitleSerializerPost
 )
 from .filters import TitleFilter
 
 
-class CustomViewSet(
+class CustomViewSetForGenreAndCategory(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
@@ -73,7 +71,7 @@ class CommentViewSet(viewsets.ModelViewSet,):
         serializer.save(author=self.request.user, review=review)
 
 
-class GenreViewSet(CustomViewSet):
+class GenreViewSet(CustomViewSetForGenreAndCategory):
     queryset = Genre.objects.all()
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
@@ -82,7 +80,7 @@ class GenreViewSet(CustomViewSet):
     lookup_field = 'slug'
 
 
-class CategoryViewSet(CustomViewSet):
+class CategoryViewSet(CustomViewSetForGenreAndCategory):
     queryset = Category.objects.all()
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )

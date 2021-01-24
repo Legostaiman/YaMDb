@@ -6,8 +6,12 @@ from users.models import User
 
 
 class Category(models.Model):
-    name = models.CharField(verbose_name='Название категории', max_length=200,
-                            unique=True)
+    name = models.CharField(
+        verbose_name='Название категории',
+        max_length=200,
+        unique=True
+    )
+
     slug = models.SlugField(
         verbose_name='Slug категории',
         max_length=200,
@@ -90,9 +94,12 @@ class Review(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    score = models.IntegerField(validators=(
-        MinValueValidator(1),
-        MaxValueValidator(10))
+
+    score = models.IntegerField(
+        validators=(
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        )
     )
 
     class Meta:
@@ -105,6 +112,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments'
     )
+
     text = models.TextField()
     author = models.ForeignKey(
         User,

@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from .validators import my_year_validator
+from .validators import year_validator
 from users.models import User
 
 
@@ -48,7 +48,7 @@ class Title(models.Model):
         verbose_name='Год выхода',
         blank=True,
         null=True,
-        validators=[my_year_validator],
+        validators=[year_validator],
     )
     genre = models.ManyToManyField(
         verbose_name='Жанр произведения',

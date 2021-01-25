@@ -30,7 +30,7 @@ from .serializers import (
 from .filters import TitleFilter
 
 
-class CustomViewSetForGenreAndCategory(
+class CDLViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
@@ -71,7 +71,7 @@ class CommentViewSet(viewsets.ModelViewSet,):
         serializer.save(author=self.request.user, review=review)
 
 
-class GenreViewSet(CustomViewSetForGenreAndCategory):
+class GenreViewSet(CDLViewSet):
     queryset = Genre.objects.all()
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
@@ -80,7 +80,7 @@ class GenreViewSet(CustomViewSetForGenreAndCategory):
     lookup_field = 'slug'
 
 
-class CategoryViewSet(CustomViewSetForGenreAndCategory):
+class CategoryViewSet(CDLViewSet):
     queryset = Category.objects.all()
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )

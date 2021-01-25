@@ -23,18 +23,17 @@ class SignUp(APIView):
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            email = serializer.validated_data['email']
-            user = User.objects.create_user(email, email=email)
-            send_mail(
-                'Cod',
-                'Use %s to give your token' % user.confirmation_key,
-                settings.ADMINS_EMAIL,
-                [email],
-                fail_silently=False,
-                )
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        user = User.objects.create_user(email, email=email)
+        send_mail(
+            'Cod',
+            'Use %s to give your token' % user.confirmation_key,
+            settings.ADMINS_EMAIL,
+            [email],
+            fail_silently=False,
+            )
+        return Response(status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -42,18 +41,17 @@ class SignUp(APIView):
 def get_token(request):
     error_message = 'confirmation key is not valid'
     serializer = ConfirmationCodeSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        email = serializer.validated_data['email']
-        confirmation_key = serializer.validated_data.get('confirmation_key')
-        user = get_object_or_404(User, email=email)
-        if confirmation_key == user.confirmation_key:
-            token = AccessToken.for_user(user)
-            user.is_active = True
-            user.save
-            return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
-        return Response({'confirmation_key': f'{error_message}'},
-                        status=status.HTTP_400_BAD_REQUEST)
-    return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    email = serializer.validated_data['email']
+    confirmation_key = serializer.validated_data.get('confirmation_key')
+    user = get_object_or_404(User, email=email)
+    if confirmation_key == user.confirmation_key:
+        token = AccessToken.for_user(user)
+        user.is_active = True
+        user.save
+        return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
+    return Response({'confirmation_key': f'{error_message}'},
+                    status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -72,17 +70,15 @@ class UserViewSet(viewsets.ModelViewSet):
         )
     def me(self, request):
         if request.method == "GET":
-            user = get_object_or_404(User, email=request.user)
-            serializer = UserSerializerForUser(user)
+            serializer = UserSerializerForUser(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            user = get_object_or_404(User, email=request.user)
             serializer = UserSerializerForUser(
-                user,
+                request.user,
                 data=request.data,
                 partial=True
                 )
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200, verbose_name='Название произведения')),
-                ('year', models.IntegerField(blank=True, null=True, validators=[api.validators.my_year_validator], verbose_name='Год выхода')),
+                ('year', models.IntegerField(blank=True, null=True, validators=[api.validators.year_validator], verbose_name='Год выхода')),
                 ('description', models.TextField(blank=True, max_length=2000, verbose_name='Описание произведения')),
                 ('category', models.ForeignKey(blank=True, db_column='category_slug', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='titles', to='api.Category', verbose_name='Категория произведения')),
                 ('genre', models.ManyToManyField(blank=True, related_name='titles', to='api.Genre', verbose_name='Жанр произведения')),
